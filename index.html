@@ -1,55 +1,163 @@
-<!DOCTYPE html
-     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-  <title>首页 - 我的学习站</title>
-  <style type="text/css">
-    /* 整体重置 */
-    body, ul, h1, p { margin:0; padding:0; }
-    ul { list-style:none; }
-    a { text-decoration:none; color:#333; }
-    a:hover { color:#0078D7; }
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>小喵平台</title>
+  <!-- 可选图标库 -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* 基本重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+    body {
+      display: flex;
+      min-height: 100vh;
+    }
+    /* 汉堡按钮（移动端） */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 100;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    /* 侧栏 */
+    .sidebar {
+      width: 200px;
+      background: #f0f0f0;
+      height: 100vh;
+      padding: 20px 0;
+      position: fixed;
+      overflow: auto;
+    }
+    .sidebar .logo {
+      text-align: center;
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+    .sidebar ul {
+      list-style: none;
+    }
+    .sidebar ul li a {
+      display: block;
+      padding: 10px 20px;
+      color: #333;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .sidebar ul li a:hover,
+    .sidebar ul li a.active {
+      background: #ddd;
+    }
+    /* 主内容区 */
+    .main-content {
+      flex: 1;
+      margin-left: 200px;
+      padding: 20px;
+    }
 
-    /* 布局 */
-    #sidebar {
-      width:200px;
-      background:#f5f5f5;
-      position:fixed;
-      top:0; left:0; bottom:0;
-      border-right:1px solid #ddd;
-      padding-top:20px;
-    }
-    #sidebar ul li {
-      margin-bottom:10px;
-      text-align:center;
-    }
-    #sidebar ul li a {
-      display:block;
-      padding:8px 0;
-    }
-
-    #content {
-      margin-left:220px; /* 留出 sidebar 宽度 + 间距 */
-      padding:20px;
+    /* 响应式：窄屏时 */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .menu-toggle {
+        display: block;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .sidebar ul {
+        display: none;
+      }
+      .sidebar ul.show {
+        display: block;
+      }
+      .main-content {
+        margin-left: 0;
+        margin-top: 50px;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="sidebar">
-    <ul>
-      <li><a href="index.xhtml">首页</a></li>
-      <li><a href="programming.xhtml">编程语言</a></li>
-      <li><a href="data.xhtml">数据分析</a></li>
-      <li><a href="hardware.xhtml">硬件学习</a></li>
-      <li><a href="ml.xhtml">机器学习</a></li>
-    </ul>
+  <!-- 移动端菜单切换按钮 -->
+  <div class="menu-toggle">
+    <i class="fas fa-bars"></i>
   </div>
 
-  <div id="content">
-    <h1>欢迎来到首页</h1>
-    <p>这是本站的首页，您可以通过左侧导航进入不同主题学习页面。</p>
-  </div>
+  <!-- 左侧导航 -->
+  <aside class="sidebar">
+    <div class="logo">
+      <i class="fas fa-cat"></i> 小喵平台
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home" class="active">
+        <i class="fas fa-home"></i> 首页
+      </a></li>
+      <li><a href="#programming">
+        <i class="fas fa-code"></i> 编程语言
+      </a></li>
+      <li><a href="#data-analysis">
+        <i class="fas fa-chart-bar"></i> 数据分析
+      </a></li>
+      <li><a href="#hardware">
+        <i class="fas fa-microchip"></i> 硬件学习
+      </a></li>
+      <li><a href="#machine-learning">
+        <i class="fas fa-brain"></i> 机器学习
+      </a></li>
+    </ul>
+  </aside>
+
+  <!-- 主内容区 -->
+  <main class="main-content">
+    <h1>欢迎来到小喵平台</h1>
+    <p>点击左侧导航，模拟跳转到对应板块。</p>
+  </main>
+
+  <script>
+    // 移动端：汉堡按钮切换菜单显隐
+    const toggle = document.querySelector('.menu-toggle');
+    const nav    = document.querySelector('.sidebar ul');
+    toggle.addEventListener('click', () => {
+      nav.classList.toggle('show');
+      const icon = toggle.querySelector('i');
+      icon.classList.toggle('fa-bars');
+      icon.classList.toggle('fa-times');
+    });
+
+    // 导航点击：高亮切换 + 演示跳转
+    document.querySelectorAll('.nav-links a')
+      .forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          // 切换 active
+          document.querySelectorAll('.nav-links a')
+            .forEach(a => a.classList.remove('active'));
+          link.classList.add('active');
+          // 收起移动菜单
+          if (window.innerWidth <= 768) {
+            nav.classList.remove('show');
+            toggle.querySelector('i')
+              .classList.replace('fa-times','fa-bars');
+          }
+          // 简单弹窗示意
+          const id = link.getAttribute('href').slice(1);
+          alert('即将跳转到：' + id);
+        });
+      });
+  </script>
 </body>
 </html>
