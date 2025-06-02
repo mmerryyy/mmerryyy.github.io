@@ -1,1 +1,87 @@
-
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>= W =硬件学习</title>
+  <style>
+    .modules-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 20px;
+    }
+    .module {
+      flex: 1;
+      min-width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 16px;
+      background: #f9f9f9;
+    }
+    .module h2 {
+      font-size: 1.2em;
+      margin-bottom: 0.5em;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 4px;
+    }
+    .module ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .module ul li {
+      margin-bottom: 0.5em;
+    }
+    .module ul li a {
+      color: #0078D7;
+      text-decoration: none;
+    }
+    .module ul li a:hover {
+      text-decoration: underline;
+    }
+     /* “返回首页” 按钮样式 */
+    .back-btn {
+      display:inline-block;
+      margin:20px;
+      padding:6px 12px;
+      background:#0078D7;
+      color:#fff;
+      text-decoration:none;
+      border-radius:4px;
+      font-size:14px;
+    }
+    .back-btn:hover {
+      background:#005fa3;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a href="index.html" class="back-btn">← 返回首页</a>
+    <div class="modules-container">
+      <div class="module">
+        <h2>电路基础</h2>
+        <ul>
+          <li><a href="https://www.bilibili.com/video/BV1qA5DzWEVh/?spm_id_from=333.1007.top_right_bar_window_custom_collection.content.click&vd_source=d5af97f5cbcbb8589412ce3efb6e554e" target="_blank">上交模电</a></li>
+        </ul>
+      </div>
+      <div class="module">
+        <h2>PCB</h2>
+        <ul>
+          <li><a href="https://www.bilibili.com/video/BV1hq7PzxETk/?spm_id_from=333.1387.upload.video_card.click&vd_source=d5af97f5cbcbb8589412ce3efb6e554e" target="_blank">电路小匠 1</a></li>
+          <li><a href="https://www.bilibili.com/video/BV1PdRgYmEG3/?spm_id_from=333.1387.homepage.video_card.click&vd_source=d5af97f5cbcbb8589412ce3efb6e554e" target="_blank">电路小匠 2</a></li>
+          <li><a href="https://www.bilibili.com/list/watchlater?bvid=BV1Py411i79F&oid=1956172379" target="_blank">cadence</a></li>
+          <li><a href="https://www.bilibili.com/list/watchlater?bvid=BV1J14y1X7rm&oid=786315225" target="_blank">基础与规则</a></li>    
+        </ul>
+      </div>
+      <div class="module">
+        <h2>嵌入式</h2>
+        <ul>
+          <li><a href="https://www.bilibili.com/video/BV1aP4y1s7Vf/?spm_id_from=333.1007.top_right_bar_window_custom_collection.content.click&vd_source=d5af97f5cbcbb8589412ce3efb6e554e" target="_blank">理解CPU</a></li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
