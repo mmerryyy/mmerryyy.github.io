@@ -1,1 +1,81 @@
-
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>学习资源一览</title>
+  <style>
+    .modules-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 20px;
+    }
+    .module {
+      flex: 1;
+      min-width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 16px;
+      background: #f9f9f9;
+    }
+    .module h2 {
+      font-size: 1.2em;
+      margin-bottom: 0.5em;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 4px;
+    }
+    .module ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .module ul li {
+      margin-bottom: 0.5em;
+    }
+    .module ul li a {
+      color: #0078D7;
+      text-decoration: none;
+    }
+    .module ul li a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="modules-container">
+    <div class="module">
+      <h2>C / C++</h2>
+      <ul>
+        <li><a href="https://cplusplus.com/doc/tutorial/" target="_blank">Cplusplus.com 教程</a></li>
+        <li><a href="https://learn.microsoft.com/zh-cn/cpp/c-language/" target="_blank">Microsoft C 教程</a></li>
+        <li><a href="https://isocpp.org/" target="_blank">ISO C++ 官方站</a></li>
+      </ul>
+    </div>
+    <div class="module">
+      <h2>Python</h2>
+      <ul>
+        <li><a href="https://docs.python.org/3/tutorial/" target="_blank">Python 官方教程</a></li>
+        <li><a href="https://www.learnpython.org/" target="_blank">LearnPython.org</a></li>
+        <li><a href="https://realpython.com/" target="_blank">Real Python</a></li>
+      </ul>
+    </div>
+    <div class="module">
+      <h2>Java</h2>
+      <ul>
+        <li><a href="https://docs.oracle.com/javase/tutorial/" target="_blank">Oracle Java 教程</a></li>
+        <li><a href="https://www.w3schools.com/java/" target="_blank">W3Schools Java 教程</a></li>
+        <li><a href="https://www.javatpoint.com/" target="_blank">JavaTpoint</a></li>
+      </ul>
+    </div>
+    <div class="module">
+      <h2>SQL</h2>
+      <ul>
+        <li><a href="https://www.w3schools.com/sql/" target="_blank">W3Schools SQL 教程</a></li>
+        <li><a href="https://www.learnsql.com/" target="_blank">LearnSQL.com</a></li>
+        <li><a href="https://www.postgresql.org/docs/" target="_blank">PostgreSQL 文档</a></li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
