@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>本地情绪图谱（7天数据）</title>
+  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.2/src/wordcloud2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* 重置和基础样式 */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f172a; /* 蓝黑色背景 */
+      margin: 0;
+      padding: 20px;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%; /* 适应网页宽度 */
+    }
+    h1 {
+      color: #e2e8f0;
+      margin-bottom: 10px;
+    }
+    .container {
+      background: #1e293b;
+      padding: 25px 30px 40px 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      max-width: 1000px; /* 扩大最大宽度 */
+      width: 100%;
+      margin: 0 auto;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      color: #94a3b8;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 16px;
+      border: 2px solid #334155;
+      border-radius: 6px;
+      transition: border-color 0.3s;
+      background: #1e293b;
+      color: #e2e8f0;
+    }
+    input[type="text"]:focus {
+      border-color: #60a5fa;
+      outline: none;
+      background: #1e293b;
+    }
+    button {
+      margin-top: 15px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+    .hint {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #94a3b8;
+      font-style: italic;
+      text-decoration: underline;
+    }
+    h2 {
+      margin-top: 40px;
+      color: #e2e8f0;
+      border-bottom: 2px solid #3b82f6;
+      padding-bottom: 6px;
+    }
+    #countDisplay p {
+      font-size: 18px;
+      margin: 6px 0;
+      color: #e2e8f0;
+    }
+    #wordclouds {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 30px;
+      justify-content: center;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+    #wordclouds > div {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      width: 320px;
+      text-align: center;
+      flex-shrink: 0;
+      border: 1px solid #334155;
+    }
+    #wordclouds h3 {
+      margin-bottom: 10px;
+      color: #e2e8f0;
+    }
+    canvas {
+      border: 1px solid #334155;
+      border-radius: 6px;
+      background: #1e293b;
+      max-width: 100%;
+      height: 200px !important;
+    }
+    .chart-container {
+      width: 100%;
+      max-width: 500px;
+      margin: 30px auto;
+    }
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      #wordclouds {
+        flex-wrap: wrap;
+      }
+      #wordclouds > div {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>本地情绪图谱（7天数据）</h1>
+    <label for="inputText">请输入您的情绪和原因：</label>
+    <input type="text" id="inputText" placeholder="例如：我现在很开心因为今天阳光明媚" aria-label="情绪输入框" />
+    <button onclick="submitEmotion()">提交</button>
+    <div class="hint">格式：<strong>我现在很xxx因为xxxx</strong></div>
+
+    <h2>最近7天情绪统计</h2>
+    <div id="countDisplay">暂无数据</div>
+
+    <!-- 情绪饼图容器 -->
+    <div class="chart-container">
+      <canvas id="emotionChart"></canvas>
+    </div>
+
+    <h2>情绪溯源</h2> 
+    <div id="wordclouds"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'localEmotionData';
+    let emotionChart = null;
+
+    // 情绪归类映射表，把同类情绪映射到统一类别
+    const emotionMap = {
+      '开心': '开心',
+      '高兴': '开心',
+      '快乐': '开心',
+      '忧郁': '悲伤',
+      '悲伤': '悲伤',
+      '难过': '悲伤',
+      '焦虑': '焦虑',
+      '紧张': '焦虑',
+      '生气': '生气',
+      '愤怒': '生气',
+      // 你可以继续添加更多映射
+    };
+
+    function normalizeEmotion(emotion) {
+      // 如果映射表里有，返回映射值，否则原样返回
+      return emotionMap[emotion] || emotion;
+    }
+
+    function parseInput(text) {
+      const regex = /我现在很(.+?)因为(.+)/;
+      const match = text.match(regex);
+      if (match) {
+        return { emotion: match[1].trim(), reason: match[2].trim() };
+      }
+      return null;
+    }
+
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return [];
+      }
+    }
+
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function cleanOldData(data) {
+      const now = Date.now();
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      return data.filter(item => (now - item.timestamp) <= sevenDaysMs);
+    }
+
+    function submitEmotion() {
+      const text = document.getElementById('inputText').value.trim();
+      if (!text) {
+        alert('请输入内容');
+        return;
+      }
+      const parsed = parseInput(text);
+      if (!parsed) {
+        alert('格式错误，请按照示例格式输入：我现在很xx因为xx');
+        return;
+      }
+
+      let data = loadData();
+      data = cleanOldData(data);
+
+      // 归一化情绪
+      const normEmotion = normalizeEmotion(parsed.emotion);
+
+      data.push({
+        emotion: normEmotion,
+        reason: parsed.reason,
+        timestamp: Date.now()
+      });
+
+      saveData(data);
+      document.getElementById('inputText').value = '';
+      loadAndRender();
+      alert('记录成功！');
+    }
+
+    function renderEmotionChart(countMap) {
+      const ctx = document.getElementById('emotionChart').getContext('2d');
+      const labels = Object.keys(countMap);
+      const data = Object.values(countMap);
+      
+      const colors = [
+        '#3b82f6', // 蓝色
+        '#10b981', // 绿色
+        '#f59e0b', // 黄色
+        '#ef4444', // 红色
+        '#8b5cf6', // 紫色
+        '#ec4899', // 粉色
+      ];
+
+      if (emotionChart) {
+        emotionChart.destroy();
+      }
+
+      emotionChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: colors.slice(0, labels.length),
+            borderColor: '#1e293b',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#e2e8f0',
+                font: {
+                  size: 14
+                }
+              }
+            },
+            tooltip: {
+              bodyColor: '#e2e8f0',
+              titleColor: '#e2e8f0',
+              backgroundColor: '#1e293b',
+              borderColor: '#334155',
+              borderWidth: 1
+            }
+          }
+        }
+      });
+    }
+
+    function loadAndRender() {
+      let data = loadData();
+      data = cleanOldData(data);
+      saveData(data);
+
+      const countMap = {};
+      const wordFreqMap = {};
+
+      data.forEach(item => {
+        const normEmotion = normalizeEmotion(item.emotion);
+        countMap[normEmotion] = (countMap[normEmotion] || 0) + 1;
+
+        const words = item.reason.split(/\s+/);
+        if (!wordFreqMap[normEmotion]) wordFreqMap[normEmotion] = {};
+        words.forEach(w => {
+          if (w.length > 1) {
+            wordFreqMap[normEmotion][w] = (wordFreqMap[normEmotion][w] || 0) + 1;
+          }
+        });
+      });
+
+      const countDiv = document.getElementById('countDisplay');
+      countDiv.innerHTML = '';
+      if (Object.keys(countMap).length === 0) {
+        countDiv.innerText = '暂无数据';
+      } else {
+        for (const [emotion, count] of Object.entries(countMap)) {
+          countDiv.innerHTML += `<p>😊 <strong>${emotion}</strong> ：${count} 次</p>`;
+        }
+        // 渲染饼图
+        renderEmotionChart(countMap);
+      }
+
+      const wordcloudsDiv = document.getElementById('wordclouds');
+      wordcloudsDiv.innerHTML = '';
+
+      for (const [emotion, freqMap] of Object.entries(wordFreqMap)) {
+        const container = document.createElement('div');
+        const title = document.createElement('h3');
+        title.textContent = `${emotion} 溯源`;
+        container.appendChild(title);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 300;
+        canvas.height = 200;
+        container.appendChild(canvas);
+
+        wordcloudsDiv.appendChild(container);
+
+        const list = Object.entries(freqMap).map(([word, freq]) => [word, freq]);
+        WordCloud(canvas, {
+          list,
+          gridSize: 10,
+          weightFactor: 10,
+          fontFamily: '微软雅黑, Arial, sans-serif',
+          color: '#3b82f6',
+          rotateRatio: 0,
+          backgroundColor: '#1e293b'
+        });
+      }
+    }
+
+    window.onload = loadAndRender;
+  </script>
+</body>
+</html>
